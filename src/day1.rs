@@ -14,6 +14,7 @@ pub fn input_generator(input: &str) -> Result<Vec<Data>> {
     input_generator_inner(input)
 }
 fn input_generator_inner(input: &str) -> Result<Vec<Data>> {
+    // keep them as strings bc parts 1 and 2 have different rules
     let mut result: Vec<String> = vec![];
     for line in input.lines() {
         result.push(line.to_string());
@@ -28,7 +29,7 @@ pub fn solve_part1(input: &[Data]) -> u32 {
     solve_part1_inner(input)
 }
 fn solve_part1_inner(input: &[Data]) -> u32 {
-    let mut result: Vec<u32> = vec![];
+    let mut calvals: Vec<u32> = vec![];
     for line in input {
         let mut tens: u32 = 0;
         let mut ones: u32 = 0;
@@ -40,10 +41,10 @@ fn solve_part1_inner(input: &[Data]) -> u32 {
                 ones = c.to_digit(10).unwrap();
             }
         }
-        result.push(tens + ones);
+        calvals.push(tens + ones);
     }
 
-    result.iter().sum()
+    calvals.iter().sum()
 }
 
 // Some digits are spelled out with letters
@@ -52,7 +53,7 @@ pub fn solve_part2(input: &[Data]) -> u32 {
     solve_part2_inner(input)
 }
 fn solve_part2_inner(input: &[Data]) -> u32 {
-    let mut result: Vec<u32> = vec![];
+    let mut calvals: Vec<u32> = vec![];
     for line in input {
         let mut tens: u32 = 0;
         let mut ones: u32 = 0;
@@ -80,50 +81,29 @@ fn solve_part2_inner(input: &[Data]) -> u32 {
                 }
             }
         }
-        result.push(tens + ones);
+        calvals.push(tens + ones);
     }
 
-    result.iter().sum()
+    calvals.iter().sum()
 }
 
+const SPELLING: [(&str, u32); 9] = [
+    ("one", 1),
+    ("two", 2),
+    ("three", 3),
+    ("four", 4),
+    ("five", 5),
+    ("six", 6),
+    ("seven", 7),
+    ("eight", 8),
+    ("nine", 9),
+];
 
 fn spelledout(maybenum: &str) -> u32 {
-    // ??? there's gotta be a better way
-    if maybenum.contains("one")
-    {
-       return 1
-    }
-    else if maybenum.contains("two")
-    {
-        return 2
-    }
-    else if maybenum.contains("three")
-    {
-        return 3
-    }
-    else if maybenum.contains("four")
-    {
-        return 4
-    }
-    else if maybenum.contains("five")
-    {
-        return 5
-    }
-    else if maybenum.contains("six")
-    {
-        return 6
-    }
-    else if maybenum.contains("seven")
-    {
-        return 7
-    }
-    else if maybenum.contains("eight")
-    {
-        return 8
-    }
-    else if maybenum.contains("nine")
-    {
-        return 9
+    for (spelling, number) in SPELLING {
+        if maybenum.contains(spelling) {
+            return number
+        }
     }
 
     0

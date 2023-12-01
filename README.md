@@ -4,4 +4,4 @@ Another year of Rust
 
 Day | Theme | Notes
 ----|-------|-------
-1   |TODO| TODO
+1   |Trebuchet?!| Strings and chars
