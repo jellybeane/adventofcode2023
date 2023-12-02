@@ -29,15 +29,12 @@ fn input_generator_inner(input: &str) -> Result<Vec<Data>> {
             let mut green: usize = 0;
             for cubestr in subsetsplit {
                 let (cube_count_str, color_str) = cubestr.split_once(" ").unwrap();
-                if color_str.contains("red"){
-                    red = cube_count_str.parse().unwrap();
-                }
-                else if color_str.contains("blue") {
-                    blue = cube_count_str.parse().unwrap();
-                }
-                else if (color_str.contains("green"))
-                {
-                    green = cube_count_str.parse().unwrap();
+                let cube_count = cube_count_str.parse().unwrap();
+                match color_str {
+                    "red" => red = cube_count,
+                    "blue" => blue = cube_count,
+                    "green" => green = cube_count,
+                    _ => unreachable!(),
                 }
             }
             gamecubes.push((red, green, blue));
@@ -59,13 +56,12 @@ fn solve_part1_inner(input: &[Data]) -> usize {
     let mut sum = 0;
     for (i, game) in input.iter().enumerate() {
         let mut impossible = false;
-        for (red, green, blue) in game {
-            if red > &12 || green > &13 || blue > &14 {
+        for &(red, green, blue) in game {
+            if red > 12 || green > 13 || blue > 14 {
                 impossible = true;
                 break;
             }
         }
-
         if !impossible {
             // Game IDs are 1 indexed
             sum += i + 1
@@ -86,19 +82,13 @@ pub fn solve_part2(input: &[Data]) -> usize {
 fn solve_part2_inner(input: &[Data]) -> usize {
     let mut powers = vec![];
     for game in input {
-        let mut redmax: &usize = &0;
-        let mut greenmax: &usize = &0;
-        let mut bluemax: &usize = &0;
-        for (red, green, blue) in game {
-            if red > redmax {
-                redmax = red;
-            }
-            if green > greenmax {
-                greenmax = green;
-            }
-            if blue > bluemax {
-                bluemax = blue;
-            }
+        let mut redmax = 0;
+        let mut greenmax = 0;
+        let mut bluemax = 0;
+        for &(red, green, blue) in game {
+            redmax = redmax.max(red);
+            greenmax = greenmax.max(green);
+            bluemax = bluemax.max(blue);
         }
         powers.push(redmax * greenmax * bluemax);
     }

@@ -4,4 +4,5 @@ Another year of Rust
 
 Day | Theme | Notes
 ----|-------|-------
-1   |Trebuchet?!| Strings and chars
+1   |Trebuchet?!| Strings and chars: `is_digit`, `to_digit`
+2   |Cube Conundrum | String splitting, `max`
