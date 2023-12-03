@@ -9,7 +9,7 @@ type Data = Vec<Value>;
 
 pub enum Value {
     Number(char),
-    Symbol,
+    Symbol(char),
     Period
 }
 
@@ -32,7 +32,7 @@ fn input_generator_inner(input: &str) -> Result<Vec<Data>> {
                 row.push(Value::Period);
             }
             else {
-                row.push(Value::Symbol);
+                row.push(Value::Symbol(c));
             }
         }
         grid.push(row);
@@ -43,7 +43,7 @@ fn input_generator_inner(input: &str) -> Result<Vec<Data>> {
 // how do i get enum type? there's gotta be a better way
 fn is_symbol(val: &Value) -> bool {
     match val {
-        Value::Symbol => return true,
+        Value::Symbol(_) => return true,
         _ => return false
     }
 }
@@ -129,12 +129,96 @@ fn solve_part1_inner(input: &[Data]) -> u32 {
     sum
 }
 
+fn is_star(val: &Value) -> bool {
+    match val {
+        &Value::Symbol(c) => return c == '*',
+        _ => return false
+    }
+}
+
+// Its gear ratio is the result of multiplying those two numbers together
+// What is the sum of all of the gear ratios in your engine schematic?
 #[aoc(day3, part2)]
-pub fn solve_part2(input: &[Data]) -> usize {
+pub fn solve_part2(input: &[Data]) -> u32 {
     solve_part2_inner(input)
 }
-fn solve_part2_inner(input: &[Data]) -> usize {
-    unimplemented!()
+fn solve_part2_inner(input: &[Data]) -> u32 {
+    let num_rows = input.len();
+    let num_cols = input[0].len();
+
+    // all the part number coords: the value, the row num, and all the columns
+    let mut partnum_coords: Vec<(u32, usize, Vec<usize>)> = vec![];
+    // first pass: find all the part numbers
+    for (i, row) in input.iter().enumerate() {
+        let mut inprogressnum = "".to_string();
+        let mut alljs = vec![];
+        for (j, entry) in row.iter().enumerate() {
+            match entry {
+                Value::Number(digit) => {
+                    inprogressnum += &digit.to_string();
+                    alljs.push(j);
+                },
+                _ => {
+                    if !inprogressnum.is_empty() {
+                        // just finished a number, check if it's a part num
+                        let mut neighbors = HashSet::new();
+                        for &nj in &alljs {
+                            neighbors.extend(my_neighbor_coords(i, nj, num_rows, num_cols));
+                        }
+                        if any_neighbor_symbols(input, &neighbors) {
+                            partnum_coords.push((inprogressnum.parse::<u32>().unwrap(), i, alljs));
+                        }
+                        // get ready for the next number
+                        inprogressnum = "".to_string();
+                        alljs = vec![];
+                    }
+                }
+            }
+        }
+        // in case the row ended on a number
+        let mut neighbors = HashSet::new();
+        for &nj in &alljs {
+            neighbors.extend(my_neighbor_coords(i, nj, num_rows, num_cols));
+        }
+        if any_neighbor_symbols(input, &neighbors) {
+            partnum_coords.push((inprogressnum.parse::<u32>().unwrap(), i, alljs));
+        }
+    }
+    
+    let mut sum = 0;
+    // second pass: find the gears
+    {
+        for (i, row) in input.iter().enumerate() {
+            for (j, entry) in row.iter().enumerate() {
+
+                if is_star(entry) {
+                    let neighbors = my_neighbor_coords(i, j, num_rows, num_cols);
+                    let mut neighboring_partnums = vec!{};
+                    for &(partnum, partrow, ref partcols) in &partnum_coords {
+                        // no number has over 3 digits
+                        if partrow > i+3 {
+                            continue;
+                        }
+                        for &partcol in partcols {
+                            if partcol > j+3 {
+                                break;
+                            }
+                            if neighbors.contains(&(partrow, partcol)) {
+                                neighboring_partnums.push(partnum);
+                                break;
+                            }
+                        }
+                    }
+                    // adjacent to exactly two part numbers?
+                    if 2 == neighboring_partnums.len() {
+                        sum += neighboring_partnums[0] * neighboring_partnums[1];
+                    }
+                }
+            }
+        }
+
+    }
+    sum
 }
 
 #[cfg(test)]
@@ -164,6 +248,6 @@ r#"467..114..
         let input = super::input_generator(TEST_INPUT).unwrap();
         let result = super::solve_part2(&input);
 
-        assert_eq!(result, 0);
+        assert_eq!(result, 467835);
     }
 }
