@@ -121,12 +121,14 @@ fn solve_part1_inner(input: &Data) -> isize {
 
     for &seed in seeds {
         let mut sourcetype = Type::Seed;
-        let mut transitionmap = transitionmaps.get(&sourcetype).unwrap();
-        let mut desttype = transitionmap.dest;
+        let mut transitionmap;
+        let mut desttype;
         let mut sourceval = seed;
         let mut destval = sourceval;
         // go through the transition maps until we get to Location
-        while desttype != Type::Location {
+        while sourcetype != Type::Location {
+            transitionmap = transitionmaps.get(&sourcetype).unwrap();
+            desttype = transitionmap.dest;
             dbg!(desttype);
             destval = sourceval;
             // check each transition range because i didn't implement intervals
@@ -140,15 +142,11 @@ fn solve_part1_inner(input: &Data) -> isize {
             // update for the next loop
             sourcetype = desttype;
             //dbg!(sourcetype);
-            transitionmap = transitionmaps.get(&sourcetype).unwrap();
-            desttype = transitionmap.dest;
             sourceval = destval;
         }
         if destval < lowest_location {
             lowest_location = destval;
         }
-        
-        dbg!(desttype);
     }
     
     lowest_location
