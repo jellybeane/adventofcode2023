@@ -1,4 +1,4 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, VecDeque, btree_map::Range};
 
 use aoc_runner_derive::{aoc, aoc_generator};
 
@@ -118,32 +118,8 @@ pub fn solve_part1(input: &Data) -> isize {
 fn solve_part1_inner(input: &Data) -> isize {
     let (seeds, transitionmaps) = input;
     let mut lowest_location = isize::MAX;
-
     for &seed in seeds {
-        let mut sourcetype = Type::Seed;
-        let mut transitionmap;
-        let mut desttype;
-        let mut sourceval = seed;
-        let mut destval = sourceval;
-        // go through the transition maps until we get to Location
-        while sourcetype != Type::Location {
-            transitionmap = transitionmaps.get(&sourcetype).unwrap();
-            desttype = transitionmap.dest;
-            dbg!(desttype);
-            destval = sourceval;
-            // check each transition range because i didn't implement intervals
-            for (i, sourcestart) in transitionmap.source_starts.iter().enumerate() {
-                let offset:isize = sourceval - sourcestart;
-                if offset >= 0 && offset < transitionmap.ranges[i] {
-                    destval = transitionmap.dest_starts[i] + offset;
-                    break;
-                }
-            }
-            // update for the next loop
-            sourcetype = desttype;
-            //dbg!(sourcetype);
-            sourceval = destval;
-        }
+        let destval= seed_to_location(seed, transitionmaps);
         if destval < lowest_location {
             lowest_location = destval;
         }
@@ -152,12 +128,57 @@ fn solve_part1_inner(input: &Data) -> isize {
     lowest_location
 }
 
+fn seed_to_location(seed: isize, transitionmaps: &HashMap<Type, TransitionMap>) -> isize{
+    let mut sourcetype = Type::Seed;
+    let mut transitionmap;
+    let mut desttype;
+    let mut sourceval = seed;
+    let mut destval = sourceval;
+    // go through the transition maps until we get to Location
+    while sourcetype != Type::Location {
+        transitionmap = transitionmaps.get(&sourcetype).unwrap();
+        desttype = transitionmap.dest;
+        destval = sourceval;
+        // check each transition range because i didn't implement intervals
+        for (i, sourcestart) in transitionmap.source_starts.iter().enumerate() {
+            let offset:isize = sourceval - sourcestart;
+            if offset >= 0 && offset < transitionmap.ranges[i] {
+                destval = transitionmap.dest_starts[i] + offset;
+                break;
+            }
+        }
+        // update for the next loop
+        sourcetype = desttype;
+        sourceval = destval;
+    }
+    destval
+}
+
+// seeds line actually describes ranges of seed numbers.
+// for each pair of numbers, the first value is the start of the range
+// and the second value is the length of the range
 #[aoc(day5, part2)]
-pub fn solve_part2(input: &Data) -> usize {
+pub fn solve_part2(input: &Data) -> isize {
     solve_part2_inner(input)
 }
-fn solve_part2_inner(input: &Data) -> usize {
-    unimplemented!()
+fn solve_part2_inner(input: &Data) -> isize {
+    let (allseeds, transitionmaps) = input;
+    let mut lowest_location = isize::MAX;
+    for seedpair in allseeds.chunks(2) {
+        let startseed = seedpair[0];
+        let seedrange = seedpair[1];
+
+        // brute force...
+        for seed in (startseed..startseed + seedrange) {
+            let destval= seed_to_location(seed, transitionmaps);
+            if destval < lowest_location {
+                lowest_location = destval;
+            }
+        }
+    }
+
+    lowest_location
+
 }
 
 #[cfg(test)]
@@ -211,6 +232,6 @@ humidity-to-location map:
         let input = super::input_generator(TEST_INPUT).unwrap();
         let result = super::solve_part2(&input);
 
-        assert_eq!(result, 0);
+        assert_eq!(result, 46);
     }
 }
