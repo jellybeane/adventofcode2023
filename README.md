@@ -9,3 +9,4 @@ Day | Theme | Notes
 3   |Gear Ratios | 2D arrays, enums, the borrow checker
 4   | Scratchcards  | HashSet, `split_whitespace`
 5   | If You Give A Seed A Fertilizer | HashMap, ranges, chunks, brute forcing
+6   | Wait For It | `zip`
