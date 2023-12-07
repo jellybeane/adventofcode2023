@@ -10,3 +10,4 @@ Day | Theme | Notes
 4   | Scratchcards  | HashSet, `split_whitespace`
 5   | If You Give A Seed A Fertilizer | HashMap, ranges, chunks, brute forcing
 6   | Wait For It | `zip`
+7   | Camel Cards | PartialOrd, Ord
