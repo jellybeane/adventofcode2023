@@ -11,3 +11,4 @@ Day | Theme | Notes
 5   | If You Give A Seed A Fertilizer | HashMap, ranges, chunks, brute forcing
 6   | Wait For It | `zip`
 7   | Camel Cards | PartialOrd, Ord
+8   | Haunted Wasteland | least common multiple, importing new crates
