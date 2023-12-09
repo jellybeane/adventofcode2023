@@ -58,14 +58,16 @@ impl Ord for Hand {
 pub fn hand_type(cards: &Vec<u32>) -> HandType {
     use HandType::*;
 
+    // a histogram
     let mut counter = HashMap::new();
     for &card in cards {
-        match counter.get(&card) {
-            Some(count) => counter.insert(card, count + 1),
-            None => counter.insert(card, 1usize),
-        };
+        counter.entry(card)
+            .and_modify(|count| *count += 1)
+            .or_insert(1);
     }
+    
     // Part 2: Js (1) are wildcards. 
+    // Add their count to the most common other card
     let jcount = counter.remove(&1);
     if let Some(count) = jcount {
         if 5 == count {
@@ -86,24 +88,25 @@ pub fn hand_type(cards: &Vec<u32>) -> HandType {
         counter.insert(topvalue, topcount + count);
     };
 
+    // Determine hand type
     match counter.len() {
         5 => HighCard,
         4 => OnePair,
         3 => {
-            for (_, count) in counter {
-                if count == 3 {
-                    return Three;
-                }
+            if counter.iter().any(|(_, &count)| 3 == count ) {
+                Three
             }
-            TwoPair
+            else {
+                TwoPair
+            }
         },
         2 => {
-            for (_, count) in counter {
-                if count == 4 {
-                    return Four;
-                }
+            if counter.iter().any(|(_, &count)| 4 == count ) {
+                Four
             }
-            FullHouse
+            else {
+                FullHouse
+            }
         },
         1 => Five,
         _ => unreachable!()

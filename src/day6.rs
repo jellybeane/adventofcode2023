@@ -36,12 +36,10 @@ fn solve_part1_inner(input: &Data) -> isize {
                                 .map(|x| x.parse().unwrap())
                                 .collect();  
 
-    let mut product = 1;
-    for (t, d) in zip(times, distances)
-    {
-        product *= num_ways_to_beat(t, d);
-    }
-    product
+    zip(times, distances)
+        .map(|(t, d)| num_ways_to_beat(t, d))
+
+        .product::<isize>()
 }
 
 fn num_ways_to_beat(t: isize, d: isize) -> isize {

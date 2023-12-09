@@ -120,11 +120,7 @@ fn solve_part1_inner(input: &[Data]) -> u32 {
 }
 
 fn is_star(val: &Value) -> bool {
-    // TODO: matches macro?
-    match val {
-        &Value::Symbol(c) => c == '*',
-        _ => false
-    }
+    matches!(val, &Value::Symbol(c) if c == '*')
 }
 
 // Its gear ratio is the result of multiplying those two numbers together
