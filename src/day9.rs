@@ -32,28 +32,27 @@ fn solve_part1_inner(input: &[Data]) -> isize {
     sum
 }
 
-fn predict_next(sequence: &Vec<isize>) -> isize {
+fn predict_next(sequence: &[isize]) -> isize {
     if sequence.iter().all(|&x| x == 0) {
         return 0;
     }
 
-    let diffs = sequence.windows(2)
+    let diffs: Vec<isize> = sequence.windows(2)
                 .map(|pair| pair[1] - pair[0]).collect();
     
     sequence.last().unwrap() + predict_next(&diffs)
 }
 
-fn predict_prev(sequence: &Vec<isize>) -> isize {
+fn predict_prev(sequence: &[isize]) -> isize {
     if sequence.iter().all(|&x| x == 0) {
         return 0;
     }
 
-    let diffs = sequence.windows(2)
+    let diffs: Vec<isize> = sequence.windows(2)
                 .map(|pair| pair[1] - pair[0]).collect();
     
     sequence[0] - predict_prev(&diffs)
 }
-
 
 #[aoc(day9, part2)]
 pub fn solve_part2(input: &[Data]) -> isize {

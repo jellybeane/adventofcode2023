@@ -65,7 +65,7 @@ pub fn solve_part2(input: &[Data]) -> usize {
 }
 fn solve_part2_inner(input: &[Data]) -> usize {
     let mut cardcount = vec![1; input.len()];
-    for (i, (winningnums, mynums)) in input.into_iter().enumerate() {
+    for (i, (winningnums, mynums)) in input.iter().enumerate() {
         let mycount = cardcount[i];
         for (j, _) in winningnums.intersection(mynums).enumerate() {
             cardcount[i + 1 + j] += mycount;

@@ -25,7 +25,7 @@ fn input_generator_inner(input: &str) -> Result<Vec<Data>> {
     for line in input.lines() {
         let mut row = vec![];
         for c in line.chars() {
-            if c.is_digit(10) {
+            if c.is_ascii_digit() {
                 row.push(Value::Number(c));
             }
             else if c == '.' {
@@ -42,10 +42,7 @@ fn input_generator_inner(input: &str) -> Result<Vec<Data>> {
 
 // how do i get enum type? there's gotta be a better way
 fn is_symbol(val: &Value) -> bool {
-    match val {
-        Value::Symbol(_) => return true,
-        _ => return false
-    }
+    matches!(val, Value::Symbol(_))
 }
 
 fn any_neighbor_symbols(input: &[Data], neighbors: &HashSet<(usize, usize)>) -> bool {
@@ -123,9 +120,10 @@ fn solve_part1_inner(input: &[Data]) -> u32 {
 }
 
 fn is_star(val: &Value) -> bool {
+    // TODO: matches macro?
     match val {
-        &Value::Symbol(c) => return c == '*',
-        _ => return false
+        &Value::Symbol(c) => c == '*',
+        _ => false
     }
 }
 

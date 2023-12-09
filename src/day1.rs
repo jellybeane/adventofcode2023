@@ -34,7 +34,7 @@ fn solve_part1_inner(input: &[Data]) -> u32 {
         let mut tens: u32 = 0;
         let mut ones: u32 = 0;
         for c in line.chars() {
-            if c.is_digit(10) {
+            if c.is_ascii_digit() {
                 if 0 == tens {
                     tens = c.to_digit(10).unwrap() * 10;
                 }
@@ -59,7 +59,7 @@ fn solve_part2_inner(input: &[Data]) -> u32 {
         let mut ones: u32 = 0;
         let mut maybespelled = "".to_owned();
         for c in line.chars() {
-            if c.is_digit(10) {
+            if c.is_ascii_digit() {
                 if 0 == tens {
                     tens = c.to_digit(10).unwrap() * 10;
                 }

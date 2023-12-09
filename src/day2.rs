@@ -28,7 +28,7 @@ fn input_generator_inner(input: &str) -> Result<Vec<Data>> {
             let mut blue: usize = 0;
             let mut green: usize = 0;
             for cubestr in subsetsplit {
-                let (cube_count_str, color_str) = cubestr.split_once(" ").unwrap();
+                let (cube_count_str, color_str) = cubestr.split_once(' ').unwrap();
                 let cube_count = cube_count_str.parse().unwrap();
                 match color_str {
                     "red" => red = cube_count,

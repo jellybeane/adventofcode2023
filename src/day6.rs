@@ -73,8 +73,8 @@ pub fn solve_part2(input: &Data) -> isize {
 fn solve_part2_inner(input: &Data) -> isize {
     let (timestr, diststr) = input;
     // want something like python's string strip
-    let t: isize = timestr.replace(" ", "").parse().unwrap();
-    let d: isize = diststr.replace(" ", "").parse().unwrap();
+    let t: isize = timestr.replace(' ', "").parse().unwrap();
+    let d: isize = diststr.replace(' ', "").parse().unwrap();
     dbg!(t, d);
     num_ways_to_beat(t, d)
 }

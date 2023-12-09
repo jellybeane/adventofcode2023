@@ -16,7 +16,7 @@ pub struct InputHand {
 impl From<InputHand> for Hand {
     fn from(input: InputHand) -> Self {
         let handtype = hand_type(&input.cards);
-        Hand { cards: input.cards, bid: input.bid, handtype: handtype }
+        Hand { cards: input.cards, bid: input.bid, handtype }
     }
 }
 
@@ -67,26 +67,23 @@ pub fn hand_type(cards: &Vec<u32>) -> HandType {
     }
     // Part 2: Js (1) are wildcards. 
     let jcount = counter.remove(&1);
-    match jcount {
-        Some(count) => {
-            if 5 == count {
-                return Five;
-            }
+    if let Some(count) = jcount {
+        if 5 == count {
+            return Five;
+        }
 
-            let mut topvalue = 0;
-            let mut topcount = 0;
-            for (&v, &c) in &counter {
-                // should have removed all the Jacks already
-                assert!(v != 11);
-                if c > topcount {
-                    topvalue = v;
-                    topcount = c;
-                }
+        let mut topvalue = 0;
+        let mut topcount = 0;
+        for (&v, &c) in &counter {
+            // should have removed all the Jacks already
+            assert!(v != 11);
+            if c > topcount {
+                topvalue = v;
+                topcount = c;
             }
-            assert!(topvalue != 0);
-            counter.insert(topvalue, topcount + count);
-        },
-        None => {} // no jokers: do nothing
+        }
+        assert!(topvalue != 0);
+        counter.insert(topvalue, topcount + count);
     };
 
     match counter.len() {
@@ -135,7 +132,7 @@ pub fn input_generator(input: &str) -> Result<Vec<Data>> {
 fn input_generator_inner(input: &str) -> Result<Vec<Data>> {
     let mut allhands = vec![];
     for line in input.lines() {
-        let (handstr, bidstr) = line.split_once(" ").unwrap();
+        let (handstr, bidstr) = line.split_once(' ').unwrap();
 
         let mut cards = vec![];
         for c in handstr.chars() {

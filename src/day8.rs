@@ -24,8 +24,8 @@ fn input_generator_inner(input: &str) -> Result<Data> {
     for line in lines.into_iter() {
         // AAA = (BBB, CCC)
         let (thisnode, nextnodes) = line.split_once(" = ").unwrap();
-        let nextnodes = nextnodes.replace("(", "");
-        let nextnodes = nextnodes.replace(")", "");
+        let nextnodes = nextnodes.replace('(', "");
+        let nextnodes = nextnodes.replace(')', "");
         let (leftnode, rightnode) = nextnodes.split_once(", ").unwrap();
         nodes.insert(thisnode.to_owned(), (leftnode.to_owned(), rightnode.to_owned()));
     }
@@ -64,12 +64,12 @@ fn solve_part2_inner(input: &Data) -> usize {
     let (instructionstr, nodes) = input;
     let instructions = instructionstr.as_bytes();
 
-    let startnodes: Vec<&String> = nodes.keys().filter(|x| x.ends_with("A")).collect();
+    let startnodes: Vec<&String> = nodes.keys().filter(|x| x.ends_with('A')).collect();
     let mut cycle_lengths = vec![];
     for startnode in startnodes {
         let mut steps = 0;
         let mut curnode = startnode;
-        while !curnode.ends_with("Z") {
+        while !curnode.ends_with('Z') {
             let (left, right) = nodes.get(curnode).unwrap();
             curnode = match instructions[steps % instructions.len()] {
                 b'L' => {left},
