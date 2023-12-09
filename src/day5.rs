@@ -1,4 +1,4 @@
-use std::collections::{HashMap, VecDeque, btree_map::Range};
+use std::collections::{HashMap, VecDeque};
 
 use aoc_runner_derive::{aoc, aoc_generator};
 
@@ -169,7 +169,7 @@ fn solve_part2_inner(input: &Data) -> isize {
         let seedrange = seedpair[1];
 
         // brute force...
-        for seed in (startseed..startseed + seedrange) {
+        for seed in startseed..startseed + seedrange {
             let destval= seed_to_location(seed, transitionmaps);
             if destval < lowest_location {
                 lowest_location = destval;

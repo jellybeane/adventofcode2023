@@ -48,13 +48,6 @@ fn is_symbol(val: &Value) -> bool {
     }
 }
 
-fn is_number(val: &Value) -> bool {
-    match val {
-        Value::Number(_) => return true,
-        _ => return false
-    }
-}
-
 fn any_neighbor_symbols(input: &[Data], neighbors: &HashSet<(usize, usize)>) -> bool {
     neighbors.iter().any(|(row, col)| is_symbol(&input[*row][*col]))
 } 
