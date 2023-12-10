@@ -79,24 +79,24 @@ fn get_loop_neighbors(location: (usize, usize), grid: &Vec<Vec<char>>) -> Vec<(u
 
         },
         '|' => {
-            neighbors.push((location.0 - 1, location.1));
-            neighbors.push((location.0 + 1, location.1));
+            neighbors.push((location.0 - 1, location.1)); // up
+            neighbors.push((location.0 + 1, location.1)); // down
         },
         '-' => {
-            neighbors.push((location.0, location.1 - 1));
-            neighbors.push((location.0, location.1 + 1));},
+            neighbors.push((location.0, location.1 - 1));  // left
+            neighbors.push((location.0, location.1 + 1));},// right 
         'L' => {
-            neighbors.push((location.0 - 1, location.1));
-            neighbors.push((location.0, location.1 + 1));},
+            neighbors.push((location.0 - 1, location.1)); // up
+            neighbors.push((location.0, location.1 + 1));}, // right
         'J' => {
-            neighbors.push((location.0 - 1, location.1));
-            neighbors.push((location.0, location.1 - 1));},
+            neighbors.push((location.0 - 1, location.1)); // up
+            neighbors.push((location.0, location.1 - 1));}, // left
         '7' => {
-            neighbors.push((location.0, location.1 - 1));
-            neighbors.push((location.0 + 1, location.1));},
+            neighbors.push((location.0, location.1 - 1)); // left
+            neighbors.push((location.0 + 1, location.1));}, // down
         'F' => {
-            neighbors.push((location.0, location.1 + 1));
-            neighbors.push((location.0 + 1, location.1));},
+            neighbors.push((location.0, location.1 + 1)); // right
+            neighbors.push((location.0 + 1, location.1));}, // down
         _ => unreachable!()
     }
     neighbors
@@ -217,6 +217,68 @@ fn floodfill(grid: &Vec<Vec<char>>, theloop: &[Node]) -> HashSet<Node> {
     visited
 }
 
+fn is_inside(location: (usize, usize), grid: &[Vec<char>], theloop: &[Node]) -> bool {
+    // loop members are not inside
+    if theloop.iter()
+        .any(|n| n.row == location.0 && n.col == location.1) {
+        return false
+    }
+    let mut count = 0;
+    for col in 0..location.1 {
+        if matches!(grid[location.0][col], 'S' | '|' | 'L' | 'J') {
+            count += 1;
+        }
+    }
+
+    // odd number of crossings means this location is inside
+    count % 2 == 1
+}
+
+fn s_replacement(theloop: &[Node]) -> char{
+    // the loop is populated by BFS, so the first node is start
+    // and the next two are its neighbors
+    let start = &theloop[0];
+    let neighbors = &theloop[1..2];
+    let n1 = &theloop[1];
+    let n2 = &theloop[2];
+
+    if n1.col == start.col && n2.col == start.col {
+        return '|';
+    }
+    else if n1.row == start.row && n2.row == start.row {
+        return '-';
+    }
+    else if n1.col == start.col-1 && n2.col == start.col {
+        return '7';
+    }
+    else if n1.col == start.col+1 && n2.col == start.col {
+        return 'F';
+    }
+    else if n1.col == start.col && n2.row == start.col + 1 {
+        return 'L';
+    }
+    else if n1.col == start.col && n2.col == start.col - 1 {
+        return 'J';
+    }
+    unreachable!()
+}
+
+fn all_replacements(grid: &Vec<Vec<char>>, theloop: &[Node]) -> Vec<Vec<char>> {
+    let num_rows = grid.len();
+    let num_cols = grid[0].len();
+
+    let mut replacementgrid = vec![vec!['.';num_cols];num_rows];
+    for node in theloop {
+        replacementgrid[node.row][node.col] = grid[node.row][node.col];
+    }
+
+    // the start node is special
+    let start = &theloop[0];
+    replacementgrid[start.row][start.col] = s_replacement(theloop);
+
+    replacementgrid
+}
+
 #[aoc(day10, part2)]
 pub fn solve_part2(input: &Data) -> usize {
     solve_part2_inner(input)
@@ -224,16 +286,24 @@ pub fn solve_part2(input: &Data) -> usize {
 fn solve_part2_inner(input: &Data) -> usize {
     let (start, grid) = input;
     let theloop = bfs(start, grid, get_loop_neighbors);
-    // oops get_floodfill_neighbors takes loop as an arg
-    //let outside = bfs(start, grid, get_floodfill_neighbors);
-    let outside = floodfill(grid, &theloop);
-
-    // if it's not part of the loop or outside, it's inside the loop
+    
+    // replace all non-loop tiles with .
+    let replacementgrid = all_replacements(grid, &theloop);
+    
     let num_rows = grid.len();
     let num_cols = grid[0].len();
-    let totalcells = num_rows * num_cols;
 
-    totalcells - theloop.len() - outside.len()
+    let mut count = 0;
+    for i in 0..num_rows {
+        for j in 0..num_cols {
+            if is_inside((i, j), &replacementgrid, &theloop)
+            {
+                count += 1
+            }
+        }
+    }
+
+    count
 }
 
 #[cfg(test)]
