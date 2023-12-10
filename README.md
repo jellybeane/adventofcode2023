@@ -13,3 +13,4 @@ Day | Theme | Notes
 7   | Camel Cards | PartialOrd, Ord, From/Into, putting functions in `map`, `HashMap::entry`, `Entry::and_modify`, `Entry::or_insert`
 8   | Haunted Wasteland | least common multiple, importing new crates
 9   | Mirage Maintenance | recursion 
+10  | Pipe Maze | breadth-first search copied from [2022 Day12](https://github.com/jellybeane/adventofcode2022/blob/merrychristmas/src/day12.rs), winding numbers

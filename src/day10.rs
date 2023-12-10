@@ -121,7 +121,7 @@ fn bfs<F>(start: &(usize, usize), grid: &Vec<Vec<char>>, get_neighbors: F)
     frontier.push_back(start_node);
     let mut visited = vec![];
 
-    // Breadth-First Search: frontier is a stack
+    // Breadth-First Search: frontier is a queue
     // Since I know it's a loop, these should the min distances
     while let Some(node) = frontier.pop_front() {
         let neighbors = get_neighbors((node.row, node.col), grid);
@@ -234,30 +234,57 @@ fn is_inside(location: (usize, usize), grid: &[Vec<char>], theloop: &[Node]) -> 
     count % 2 == 1
 }
 
+#[derive(Eq, PartialEq)]
+enum Direction {
+    Up, 
+    Down,
+    Left, 
+    Right
+}
+
+// the direction of neighbor relative to me
+fn get_direction(me: &Node, neighbor: &Node) -> Direction{
+    if neighbor.row < me.row {
+        return Direction::Up;
+    }
+    else if neighbor.row > me.row {
+        return Direction::Down;
+    }
+    else if neighbor.col < me.col {
+        return Direction::Left;
+    }
+    else if neighbor.col > me.col {
+        return Direction::Right;
+    }
+    unreachable!()
+}
+
+// replace the start node with its corresponding shape
 fn s_replacement(theloop: &[Node]) -> char{
     // the loop is populated by BFS, so the first node is start
     // and the next two are its neighbors
     let start = &theloop[0];
-    let neighbors = &theloop[1..2];
     let n1 = &theloop[1];
     let n2 = &theloop[2];
+    let directions = vec![get_direction(start, n1), get_direction(start, n2)];
 
-    if n1.col == start.col && n2.col == start.col {
+    use crate::day10::Direction::*;
+    if directions.contains(&Up) && directions.contains(&Down) {
         return '|';
     }
-    else if n1.row == start.row && n2.row == start.row {
+    else if directions.contains(&Left) && directions.contains(&Right) {
         return '-';
     }
-    else if n1.col == start.col-1 && n2.col == start.col {
+    else if directions.contains(&Left) && directions.contains(&Down) {
         return '7';
     }
-    else if n1.col == start.col+1 && n2.col == start.col {
+    else if directions.contains(&Right) && directions.contains(&Down) {
         return 'F';
     }
-    else if n1.col == start.col && n2.row == start.col + 1 {
+    else if directions.contains(&Up) && directions.contains(&Right) {
         return 'L';
     }
-    else if n1.col == start.col && n2.col == start.col - 1 {
+    else if directions.contains(&Up) && directions.contains(&Left) {
         return 'J';
     }
     unreachable!()
