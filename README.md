@@ -15,3 +15,4 @@ Day | Theme | Notes
 9   | Mirage Maintenance | recursion 
 10  | Pipe Maze | breadth-first search copied from [2022 Day12](https://github.com/jellybeane/adventofcode2022/blob/merrychristmas/src/day12.rs), counting crossings, unused floodfill
 11  | Cosmic Expansion | Manhattan distance
+12  | Hot Springs | Dynamic Programming, `fold`
