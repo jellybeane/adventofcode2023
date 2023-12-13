@@ -5,7 +5,7 @@ Another year of Rust
 Day | Theme | Notes
 ----|-------|-------
 1   |Trebuchet?!| Strings and chars: `is_ascii_digit`, `to_digit`
-2   |Cube Conundrum | String splitting, `max`
+2   |Cube Conundrum | String splitting, `max`, `sum`
 3   |Gear Ratios | 2D arrays, enums, the borrow checker, `matches!` macro
 4   | Scratchcards  | HashSet, `split_whitespace`
 5   | If You Give A Seed A Fertilizer | HashMap, ranges, chunks, brute forcing
@@ -16,3 +16,4 @@ Day | Theme | Notes
 10  | Pipe Maze | breadth-first search copied from [2022 Day12](https://github.com/jellybeane/adventofcode2022/blob/merrychristmas/src/day12.rs), counting crossings, unused floodfill
 11  | Cosmic Expansion | Manhattan distance
 12  | Hot Springs | Dynamic Programming, `fold`
+13  | Point of Incidence | 2d vec iteration
