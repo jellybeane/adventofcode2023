@@ -17,3 +17,4 @@ Day | Theme | Notes
 11  | Cosmic Expansion | Manhattan distance
 12  | Hot Springs | Dynamic Programming, `fold`
 13  | Point of Incidence | 2d vec iteration
+14  | Parabolic Reflector Dish | actually finding cycles, labeled `break`, `#[cfg(test)]`
