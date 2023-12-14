@@ -4,8 +4,8 @@ Another year of Rust
 
 Day | Theme | Notes
 ----|-------|-------
-1   |Trebuchet?!| Strings and chars: `is_ascii_digit`, `to_digit`
-2   |Cube Conundrum | String splitting, `max`, `sum`
+1   |Trebuchet?!| Strings and chars: `is_ascii_digit`, `to_digit`, `sum`
+2   |Cube Conundrum | String splitting, `max`
 3   |Gear Ratios | 2D arrays, enums, the borrow checker, `matches!` macro
 4   | Scratchcards  | HashSet, `split_whitespace`
 5   | If You Give A Seed A Fertilizer | HashMap, ranges, chunks, brute forcing
