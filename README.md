@@ -18,3 +18,4 @@ Day | Theme | Notes
 12  | Hot Springs | Dynamic Programming, `fold`
 13  | Point of Incidence | 2d vec iteration
 14  | Parabolic Reflector Dish | actually finding cycles, labeled `break`, `#[cfg(test)]`
+15  | Lens Library | `Entry::or_insert_with`
