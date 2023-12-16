@@ -19,3 +19,4 @@ Day | Theme | Notes
 13  | Point of Incidence | 2d vec iteration
 14  | Parabolic Reflector Dish | actually finding cycles, labeled `break`, `#[cfg(test)]`
 15  | Lens Library | `Entry::or_insert_with`
+16  | The Floor Will Be Lava | a lot of copy-pasting
