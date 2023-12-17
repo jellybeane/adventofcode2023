@@ -1,4 +1,4 @@
-use std::collections::{VecDeque, HashMap, HashSet};
+use std::collections::{VecDeque, HashMap, HashSet, BinaryHeap};
 
 use aoc_runner_derive::{aoc, aoc_generator};
 
@@ -29,23 +29,25 @@ fn find_path(grid: &Vec<Vec<usize>>) -> HashMap<(usize, usize), (usize, usize)>{
     let mut distance = vec![vec![usize::MAX; num_cols]; num_rows];
     distance[0][0] = 0;
 
-    let mut frontier = VecDeque::new();
-    frontier.push_back((0,0));
+    // Dijkstra: frontier is a Priority Queue
+    // Tuples are compared lexicographically, so store (distance, (row, len))
+    let mut queue = BinaryHeap::new();
+    queue.push((0, (0,0)));
 
     let mut prev = HashMap::new();
-
-    while let Some(node) = frontier.pop_front() {
+    
+    while let Some((_, node)) = queue.pop() {
         let neighbors = get_neighbors(&node, grid, &prev);
         for neighbor in neighbors {
             let new_distance = distance[node.0][node.1] + grid[neighbor.0][neighbor.1];
             //dbg!(new_distance);
             if new_distance < distance[neighbor.0][neighbor.1] {
-                frontier.push_back(neighbor);
+                // binary heaps are max-heaps, so put the negative distance to make it act like a min-heap
+                queue.push((-(new_distance as isize), neighbor));
                 distance[neighbor.0][neighbor.1] = new_distance;
                 prev.insert(neighbor, node);
             }
         }
-        
     }
 
     dbg!(distance[num_rows-1][num_cols-1]);
@@ -56,10 +58,6 @@ fn find_path(grid: &Vec<Vec<usize>>) -> HashMap<(usize, usize), (usize, usize)>{
 fn get_neighbors(location:&(usize, usize), grid: &Vec<Vec<usize>>, prev: &HashMap<(usize, usize), (usize, usize)>)
  -> Vec<(usize, usize)> {
     use Direction::*;
-    let mut neighbors = vec![];
-    let num_rows = grid.len();
-    let num_cols = grid[0].len();
-    
     let mut directions = HashSet::new();
     directions.insert(Up);
     directions.insert(Down);
@@ -78,15 +76,21 @@ fn get_neighbors(location:&(usize, usize), grid: &Vec<Vec<usize>>, prev: &HashMa
         
         // can only go up to 3 blocks in the same direction
         if let Some(prev_prev_loc) = prev.get(prev_loc) {
-            let dir2 = get_direction(prev_prev_loc, prev_loc);
-                if dir1 == dir2 {
+            if let Some(prev_prev_prev_loc) = prev.get(prev_prev_loc) {
+                let dir3 = get_direction(prev_prev_prev_loc, prev_prev_loc);
+                let dir2 = get_direction(prev_prev_loc, prev_loc);
+                if dir1 == dir2 && dir2 == dir3 {
                     directions.remove(&dir2);
                 }
+            }
         }
     }
 
+    let mut neighbors = vec![];
     let row = location.0;
     let col = location.1;
+    let num_rows = grid.len();
+    let num_cols = grid[0].len();
     for dir in directions {
         match dir {
             Up => if row > 0 { neighbors.push((row - 1, col)); }
