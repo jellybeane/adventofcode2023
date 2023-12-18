@@ -24,39 +24,50 @@ fn input_generator_inner(input: &str) -> Result<Data> {
 }
 
 fn find_path(grid: &Vec<Vec<usize>>) -> HashMap<(usize, usize), (usize, usize)>{
+    use Direction::*;
     let num_rows = grid.len();
     let num_cols = grid[0].len();
-    let mut distance = vec![vec![usize::MAX; num_cols]; num_rows];
-    distance[0][0] = 0;
+    let mut cost = HashMap::new();
+    cost.insert(Up, vec![vec![usize::MAX; num_cols]; num_rows]);
+    cost.insert(Down, vec![vec![usize::MAX; num_cols]; num_rows]);
+    cost.insert(Left, vec![vec![usize::MAX; num_cols]; num_rows]);
+    cost.insert(Right, vec![vec![usize::MAX; num_cols]; num_rows]);
+    for costgrid in cost.values_mut() {
+        costgrid[0][0] = 0;
+    }
 
     // Dijkstra: frontier is a Priority Queue
-    // Tuples are compared lexicographically, so store (distance, (row, len))
+    // Tuples are compared lexicographically, so store (cost, (row, len))
     let mut queue = BinaryHeap::new();
     queue.push((0, (0,0)));
 
     let mut prev = HashMap::new();
     
-    while let Some((_, node)) = queue.pop() {
+    while let Some((mycost, node)) = queue.pop() {
+        //dbg!(mycost, node);
+
         let neighbors = get_neighbors(&node, grid, &prev);
-        for neighbor in neighbors {
-            let new_distance = distance[node.0][node.1] + grid[neighbor.0][neighbor.1];
-            //dbg!(new_distance);
-            if new_distance < distance[neighbor.0][neighbor.1] {
-                // binary heaps are max-heaps, so put the negative distance to make it act like a min-heap
-                queue.push((-(new_distance as isize), neighbor));
-                distance[neighbor.0][neighbor.1] = new_distance;
+        for (dir, neighbor) in neighbors {
+            let new_cost = (-mycost as usize) + grid[neighbor.0][neighbor.1];
+            //dbg!(new_cost);
+            if new_cost < cost.get(&dir).unwrap()[neighbor.0][neighbor.1] {
+                // binary heaps are max-heaps, so put the negative cost to make it act like a min-heap
+                queue.push((-(new_cost as isize), neighbor));
+                cost.get_mut(&dir).unwrap()[neighbor.0][neighbor.1] = new_cost;
                 prev.insert(neighbor, node);
             }
         }
     }
 
-    dbg!(distance[num_rows-1][num_cols-1]);
+    for (_, costgrid) in cost {
+        dbg!(costgrid[num_rows - 1][num_cols - 1]);
+    }
 
     prev
 }
 
 fn get_neighbors(location:&(usize, usize), grid: &Vec<Vec<usize>>, prev: &HashMap<(usize, usize), (usize, usize)>)
- -> Vec<(usize, usize)> {
+ -> Vec<(Direction, (usize, usize))> {
     use Direction::*;
     let mut directions = HashSet::new();
     directions.insert(Up);
@@ -93,10 +104,10 @@ fn get_neighbors(location:&(usize, usize), grid: &Vec<Vec<usize>>, prev: &HashMa
     let num_cols = grid[0].len();
     for dir in directions {
         match dir {
-            Up => if row > 0 { neighbors.push((row - 1, col)); }
-            Down => if row < num_rows - 1 { neighbors.push((row + 1, col)); },
-            Left => if col > 0 { neighbors.push((row, col - 1)); },
-            Right => if col < num_cols - 1 { neighbors.push((row, col + 1)); },
+            Up => if row > 0 { neighbors.push((Up, (row - 1, col))); }
+            Down => if row < num_rows - 1 { neighbors.push((Down, (row + 1, col))); },
+            Left => if col > 0 { neighbors.push((Left, (row, col - 1))); },
+            Right => if col < num_cols - 1 { neighbors.push((Right, (row, col + 1))); },
         }
     }
 
@@ -154,6 +165,27 @@ fn solve_part1_inner(input: &Data) -> usize {
         println!();
     }
 
+    let mut toprint = vec![vec!['.'; num_cols]; num_rows];
+    toprint[num_rows - 1][num_cols - 1] = '#';
+
+    for (node, prev) in prevmap {
+        let dir = get_direction(&node, &prev);
+        let c = match dir {
+            Direction::Up => '^',
+            Direction::Down => 'v',
+            Direction::Left => '<',
+            Direction::Right => '>',
+        };
+        toprint[node.0][node.1] = c;
+    }
+
+    for row in toprint {
+        for c in row {
+            print!("{}", c);
+        }
+        println!();
+    }
+
     sum
 }
 
@@ -188,6 +220,19 @@ r#"2413432311323
         let result = super::solve_part1(&input);
 
         assert_eq!(result, 102);
+    }
+
+    const TEST_INPUT2: &'static str =
+r#"111119
+999199
+999111
+"#;
+    #[test]
+    fn test_small() {
+        let input = super::input_generator(TEST_INPUT2).unwrap();
+        let result = super::solve_part1(&input);
+
+        assert_eq!(result, 7);
     }
 
     #[test]
