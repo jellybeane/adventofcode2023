@@ -6,7 +6,7 @@ use anyhow::Result;
 
 type Data = (Direction, usize, String);
 
-#[derive(Eq, PartialEq, Clone, Copy, Hash)]
+#[derive(Eq, PartialEq, Clone, Copy, Hash, Debug)]
 pub enum Direction {
     Up, 
     Down,
@@ -154,7 +154,32 @@ pub fn solve_part2(input: &[Data]) -> usize {
     solve_part2_inner(input)
 }
 fn solve_part2_inner(input: &[Data]) -> usize {
+    let instructions = parse_part2(input);
+
     unimplemented!()
+}
+
+fn parse_part2(input: &[Data]) -> Vec<(Direction, usize)> {
+    let mut instructions = vec![];
+    // #70c710 = R 461937
+    for (_, _, hexstr) in input {
+        // strip parens
+        let hexstr = hexstr.replace('(', "");
+        let hexstr = hexstr.replace(')', "");
+        let numstr = &hexstr[1..6];
+        let dirchar = hexstr.chars().last().unwrap();
+        let direction = match dirchar {
+            '0' => Direction::Right,
+            '1' => Direction::Down,
+            '2' => Direction::Left,
+            '3' => Direction::Up,
+            _ => unreachable!()
+        };
+        let num = usize::from_str_radix(numstr, 16).unwrap();
+        instructions.push((direction, num));
+        println!("{} = {:?} {}", hexstr, direction, num);
+    }
+    instructions
 }
 
 #[cfg(test)]
